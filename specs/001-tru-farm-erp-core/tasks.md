@@ -40,17 +40,24 @@ incrémentale indépendante.
 
 **⚠️ CRITIQUE**: Aucune user story ne démarre avant la fin de cette phase.
 
-- [ ] T008 Schéma PostgreSQL de base (Exploitation, Utilisateur, Animal) + migrations
-- [ ] T009 Activer Row Level Security PostgreSQL par Exploitation/Coopérative (fondation US6)
-- [ ] T010 [P] Authentification : PIN 4 chiffres offline (bcrypt SQLite mobile) + email/OTP 2FA web
-- [ ] T011 [P] RBAC par rôle (gérant, agent terrain, comptable, gestionnaire coopérative,
-      vétérinaire externe) dans `api/src/common/rbac/`
-- [ ] T012 Journal d'audit append-only (`api/src/common/audit-log/`) — principe constitutionnel IV
-- [ ] T013 [P] Moteur de synchronisation offline : file d'actions locale + sync delta
-      (`mobile/lib/core/sync/`, `api/src/modules/sync/`)
-- [ ] T014 [P] Arbitrage manuel des conflits sur données financières (notification gérant)
-- [ ] T015 Configuration environnement (AWS af-south-1, S3 sauvegardes chiffrées, secrets)
-- [ ] T016 [P] Gestion des erreurs et logging structuré (api, mobile, web, ia)
+- [x] T008 Schéma de base MySQL (Exploitation, Utilisateur, Animal) + migrations Laravel —
+      `database/migrations/`, modèles `app/Models/{Exploitation,User,Animal}.php`
+- [x] T009 Row Level Security — **ADAPTÉ** : MySQL/mutualisé n'a pas de RLS native ; implémenté en
+      scope applicatif (`app/Models/Scopes/ExploitationScope.php` + trait
+      `BelongsToExploitation`), testé avec 2 exploitations isolées
+- [x] T010 [P] Authentification : PIN 4 chiffres (bcrypt, verrouillage 5 tentatives) + email/mdp +
+      OTP 2FA email (`app/Http/Controllers/Auth/AuthController.php`) — testé de bout en bout
+- [x] T011 [P] RBAC par rôle (gérant, agent terrain, comptable, gestionnaire coopérative,
+      vétérinaire externe) — `app/Models/Role.php`, middleware `role:` (`EnsureUserHasRole`)
+- [x] T012 Journal d'audit append-only — `audit_logs` + trait `Auditable` (auto create/update/delete)
+- [x] T013 [P] Moteur de synchronisation offline : file d'actions (`sync_actions`, idempotence par
+      UUID client) + delta sync (`SyncController::push/pull`) — testé (push, re-push idempotent, pull)
+- [x] T014 [P] Arbitrage manuel des conflits financiers : détection (`sync_conflicts`), notification
+      email au gérant, endpoint de résolution réservé au rôle `gerant`
+- [x] T015 Configuration environnement — **ADAPTÉ** : pas d'AWS/S3 sur Camoo ; sauvegarde locale
+      chiffrée AES-256 (`artisan sauvegarde:executer`) à planifier via cron hébergeur
+- [x] T016 [P] Logging structuré JSON (`app/Logging/JsonFormatterTap.php`, canal `structured`) +
+      corrélation par requête (`AssignRequestId` middleware, header `X-Request-Id`)
 
 **Checkpoint**: Fondations prêtes — les user stories peuvent démarrer.
 
