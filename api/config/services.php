@@ -31,6 +31,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'rfc3161' => [
+        'tsa_url' => env('RFC3161_TSA_URL'),
+    ],
+
+    'mokinevoto' => [
+        'webhook_secret' => env('MOKINEVOTO_WEBHOOK_SECRET'),
+    ],
+
     'mtn_momo' => [
         'base_url' => env('MTN_MOMO_BASE_URL'),
         'subscription_key' => env('MTN_MOMO_SUBSCRIPTION_KEY'),

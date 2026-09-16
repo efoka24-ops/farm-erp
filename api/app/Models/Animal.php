@@ -67,4 +67,39 @@ class Animal extends Model
     {
         return $this->pesees()->value('poids_kg');
     }
+
+    public function vaccinations(): HasMany
+    {
+        return $this->hasMany(Vaccination::class);
+    }
+
+    public function traitements(): HasMany
+    {
+        return $this->hasMany(Traitement::class);
+    }
+
+    public function consultationsVeterinaires(): HasMany
+    {
+        return $this->hasMany(ConsultationVeterinaire::class);
+    }
+
+    /**
+     * Blocage vente sous délai d'attente (T045) : un animal ayant reçu un
+     * traitement dont le délai d'attente n'est pas écoulé ne peut pas être
+     * vendu (résidus médicamenteux, sécurité sanitaire de la filière).
+     */
+    public function peutEtreVendu(): bool
+    {
+        return ! $this->traitements()
+            ->where('date_fin_delai_attente', '>=', now()->toDateString())
+            ->exists();
+    }
+
+    public function traitementBloquant(): ?Traitement
+    {
+        return $this->traitements()
+            ->where('date_fin_delai_attente', '>=', now()->toDateString())
+            ->orderByDesc('date_fin_delai_attente')
+            ->first();
+    }
 }

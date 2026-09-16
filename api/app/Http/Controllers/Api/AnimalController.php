@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Animal;
+use App\Services\Sante\CalendrierVaccinalService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Module cheptel (T022) : CRUD animal (acquisitions = create, sorties = statut
@@ -25,7 +27,7 @@ class AnimalController extends Controller
         return response()->json($animaux);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, CalendrierVaccinalService $calendrierVaccinal): JsonResponse
     {
         $data = $request->validate([
             'espece' => ['required', 'string', 'max:100'],
@@ -38,6 +40,8 @@ class AnimalController extends Controller
         ]);
 
         $animal = Animal::create([...$data, 'statut' => 'actif']);
+
+        $calendrierVaccinal->planifierPour($animal);
 
         return response()->json($animal, 201);
     }
@@ -63,6 +67,14 @@ class AnimalController extends Controller
             'description' => ['sometimes', 'nullable', 'string'],
             'photo_path' => ['sometimes', 'nullable', 'string'],
         ]);
+
+        if (($data['statut'] ?? null) === 'vendu' && ! $animal->peutEtreVendu()) {
+            $blocage = $animal->traitementBloquant();
+
+            throw ValidationException::withMessages([
+                'statut' => ["Vente bloquée : délai d'attente du traitement '{$blocage->medicament}' jusqu'au {$blocage->date_fin_delai_attente->toDateString()}."],
+            ]);
+        }
 
         $animal->update($data);
 

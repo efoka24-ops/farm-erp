@@ -5,11 +5,15 @@ use App\Http\Controllers\Api\AnimalController;
 use App\Http\Controllers\Api\ComptabiliteController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DepenseController;
+use App\Http\Controllers\Api\DossierFinancementController;
 use App\Http\Controllers\Api\IncidentController;
 use App\Http\Controllers\Api\PeseeController;
 use App\Http\Controllers\Api\RecetteController;
 use App\Http\Controllers\Api\SyncController;
+use App\Http\Controllers\Api\TraitementController;
+use App\Http\Controllers\Api\VaccinationController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Webhooks\MokineVetoWebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +25,9 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/login/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('/auth/login/pin', [AuthController::class, 'loginPin']);
+
+// Webhook public (sécurisé par secret partagé, pas de session utilisateur)
+Route::post('/webhooks/mokinevoto/consultations', [MokineVetoWebhookController::class, 'consultation']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'me']);
@@ -69,4 +76,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/comptabilite/mouvements/export-csv', [ComptabiliteController::class, 'exportMouvementsCsv']);
     Route::get('/animaux/{animal}/cout-revient', [ComptabiliteController::class, 'coutRevient']);
     Route::get('/animaux/{animal}/seuil-rentabilite', [ComptabiliteController::class, 'seuilRentabilite']);
+
+    // Santé vétérinaire (US4)
+    Route::get('/animaux/{animal}/vaccinations', [VaccinationController::class, 'index']);
+    Route::post('/vaccinations/{vaccination}/administrer', [VaccinationController::class, 'administrer']);
+    Route::get('/vaccinations/alertes', [VaccinationController::class, 'alertes']);
+    Route::post('/vaccinations/campagne', [VaccinationController::class, 'campagne']);
+
+    Route::post('/animaux/{animal}/traitements', [TraitementController::class, 'store']);
+    Route::get('/animaux/{animal}/dma', [TraitementController::class, 'dma']);
+
+    // Dossier de financement (US3)
+    Route::get('/financement/completude', [DossierFinancementController::class, 'verifierCompletude']);
+    Route::get('/financement/dossiers', [DossierFinancementController::class, 'index']);
+    Route::post('/financement/dossiers', [DossierFinancementController::class, 'store']);
+    Route::get('/financement/dossiers/{dossier}/telecharger', [DossierFinancementController::class, 'telecharger']);
+    Route::get('/financement/dossiers/{dossier}/verifier', [DossierFinancementController::class, 'verifierSignature']);
 });
