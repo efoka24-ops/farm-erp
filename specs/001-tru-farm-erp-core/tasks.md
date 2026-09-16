@@ -71,19 +71,30 @@ incrémentale indépendante.
 
 ### Tests
 
-- [ ] T017 [P] [US1] Test intégration cycle offline 30 jours (mobile, réseau coupé simulé)
-- [ ] T018 [P] [US1] Test contrat API `POST /animaux`, `GET /animaux/:id` dans `api/tests/contract/`
-- [ ] T019 [P] [US1] Test arbitrage conflit financier à la synchronisation
+- [x] T017 [P] [US1] Test cycle offline (`CycleOfflineTest`) : création animal → pesée → incident →
+      distribution → sync (idempotente) — volet serveur ; le volet mobile (30j réseau coupé réel sur
+      device) reste à valider en UAT terrain (T097)
+- [x] T018 [P] [US1] Test contrat API `POST /animaux`, `GET /animaux/:id` (`tests/Contract/AnimalApiTest.php`,
+      5 cas dont isolation RLS et recherche par ID TRU TRACE)
+- [x] T019 [P] [US1] Test arbitrage conflit financier (`SyncConflitFinancierTest`) — détection +
+      résolution réservée au gérant
 
 ### Implementation
 
-- [ ] T020 [P] [US1] Modèle Animal (SQLite Drift + PostgreSQL) avec identifiant TRU TRACE QR
-- [ ] T021 [P] [US1] Écran fiche animal mobile (photo, description, historique) offline
-- [ ] T022 [US1] Module `api/src/modules/cheptel/` (CRUD animal, acquisitions, sorties)
-- [ ] T023 [US1] Module `api/src/modules/alimentation/` (distributions, déduction stock)
-- [ ] T024 [US1] Écran mobile "Signaler un animal malade" (1 touche, offline)
-- [ ] T025 [US1] Génération/scan QR code TRU TRACE côté mobile
-- [ ] T026 [US1] Dashboard exécutif mobile (chiffres clés + 3 alertes prioritaires)
+- [x] T020 [P] [US1] Modèle Animal — Laravel/MySQL (`app/Models/Animal.php`) + miroir offline Drift/SQLite
+      mobile (`mobile/lib/core/db/app_database.dart`), ID TRU TRACE généré à la création (`TRU-xxxxxxxxxx`)
+- [x] T021 [P] [US1] Écran fiche animal mobile offline (`FicheAnimalScreen`) : liste + création +
+      indicateur de sync ; photo/historique détaillé en suivi (US1 reste utilisable sans)
+- [x] T022 [US1] Module cheptel API (`AnimalController`, `PeseeController`) : CRUD animal, pesées ;
+      acquisitions = création, sorties = changement de statut (vendu/mort/réformé)
+- [x] T023 [US1] Module alimentation API (`AlimentationController`) : distributions enregistrées ;
+      déduction de stock réelle différée à US9 (Phase 8, module stocks pas encore livré)
+- [x] T024 [US1] Écran mobile "Signaler un animal malade" (`SignalerMaladeScreen`) : un seul bouton,
+      écrit directement dans la file de sync locale, aucune connexion requise
+- [x] T025 [US1] QR TRU TRACE : génération côté mobile (`qr_flutter`, `FicheAnimalScreen`) et endpoint
+      API `GET /animaux/{id}/qr` — **scan caméra en suivi** (permissions par plateforme non configurées)
+- [x] T026 [US1] Dashboard exécutif : `DashboardController` (API, chiffres + 3 alertes triées par
+      gravité) et `DashboardScreen` (mobile, chiffres locaux calculés hors ligne)
 
 **Checkpoint**: US1 fonctionnelle et testable indépendamment (MVP terrain).
 
