@@ -1,0 +1,28 @@
+# Node
+node_modules/
+web/dist/
+web/node_modules/
+
+# PHP / Laravel
+api/vendor/
+api/.env
+api/.env.production
+api/storage/*.key
+api/bootstrap/cache/*.php
+api/database/database.sqlite
+
+# Flutter
+mobile/.dart_tool/
+mobile/build/
+mobile/.flutter-plugin-dependencies
+
+# Python
+ia-planificateur/.venv/
+ia-planificateur/__pycache__/
+ia-planificateur/*.pyc
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+*.log
