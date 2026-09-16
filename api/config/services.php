@@ -31,4 +31,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'mtn_momo' => [
+        'base_url' => env('MTN_MOMO_BASE_URL'),
+        'subscription_key' => env('MTN_MOMO_SUBSCRIPTION_KEY'),
+        'api_user' => env('MTN_MOMO_API_USER'),
+        'api_key' => env('MTN_MOMO_API_KEY'),
+        'target_environment' => env('MTN_MOMO_TARGET_ENVIRONMENT', 'sandbox'),
+    ],
+
 ];

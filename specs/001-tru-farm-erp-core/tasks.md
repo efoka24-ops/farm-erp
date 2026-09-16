@@ -109,20 +109,31 @@ un expert-comptable OHADA.
 
 ### Tests
 
-- [ ] T027 [P] [US2] Tests unitaires calculs OHADA (résultat net, bilan, coût de revient) — Jest
-- [ ] T028 [P] [US2] Test intégration flux dépense/recette → état financier
+- [x] T027 [P] [US2] Tests unitaires calculs OHADA — **ADAPTÉ** : PHPUnit (pas de Jest, backend
+      Laravel) — `EtatsFinanciersServiceTest` (résultat net, bilan, trésorerie) et
+      `CoutRevientServiceTest` (coût de revient, seuil de rentabilité), 9 cas
+- [x] T028 [P] [US2] Test intégration flux dépense/recette → état financier (`FluxOhadaTest`,
+      via l'API) — 3 cas dont le paiement MTN MoMo non configuré
 
 ### Implementation
 
-- [ ] T029 [P] [US2] Plan comptable OHADA simplifié (5 classes) dans
-      `api/src/modules/comptabilite-ohada/plan-comptable.ts`
-- [ ] T030 [US2] Saisie dépense/recette simplifiée (liens auto stock/ventes)
-- [ ] T031 [US2] Génération compte de résultat, bilan simplifié, tableau de trésorerie (PDFKit +
-      Puppeteer)
-- [ ] T032 [US2] Calcul coût de revient par animal + seuil de rentabilité
-- [ ] T033 [US2] Intégration paiement fournisseurs MTN MoMo Rwanda
-- [ ] T034 [US2] Écran web comptable (saisie, export Excel/PDF)
-- [ ] T035 [US2] Revue de conformité par expert-comptable agréé OHADA (gate de sortie)
+- [x] T029 [P] [US2] Plan comptable OHADA simplifié (5 classes retenues : 2 immobilisations,
+      3 stocks, 5 trésorerie, 6 charges, 7 produits) — migration `comptes_ohada`, 15 comptes seedés
+- [x] T030 [US2] Saisie dépense/recette simplifiée (`DepenseController`, `RecetteController`) — choix
+      d'un compte OHADA dans une liste courte, lien optionnel vers un animal (coût de revient)
+- [x] T031 [US2] Génération compte de résultat, bilan simplifié, tableau de trésorerie
+      (`EtatsFinanciersService`) + export PDF — **ADAPTÉ** : dompdf au lieu de PDFKit/Puppeteer
+      (Puppeteer nécessite Chromium headless, indisponible sur hébergement mutualisé)
+- [x] T032 [US2] Coût de revient par animal + seuil de rentabilité (`CoutRevientService`) — somme des
+      dépenses liées à l'animal ; l'alimentation par lot sera répartie automatiquement avec US9
+- [x] T033 [US2] Intégration paiement fournisseurs MTN MoMo Rwanda (`MtnMomoService`) — structure
+      fonctionnelle contre l'API Collections/Disbursements, **non activée** (aucune credential MTN
+      fournie) ; échoue explicitement (422) tant que `MTN_MOMO_*` n'est pas renseigné
+- [x] T034 [US2] Écran web comptable (`web/src/features/comptabilite/`) : saisie dépense/recette,
+      résumé du mois, export PDF (compte de résultat, bilan) et CSV mouvements — **ADAPTÉ** : CSV
+      plutôt que .xlsx natif (évite la dépendance PhpSpreadsheet pour un besoin déjà couvert)
+- [ ] T035 [US2] Revue de conformité par expert-comptable agréé OHADA (gate de sortie) — **hors
+      périmètre agent** : nécessite un expert-comptable humain agréé OHADA, à planifier côté métier
 
 **Checkpoint**: US1 + US2 fonctionnelles indépendamment.
 
