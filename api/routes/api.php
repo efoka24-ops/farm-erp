@@ -5,9 +5,11 @@ use App\Http\Controllers\Api\AnimalController;
 use App\Http\Controllers\Api\BonCommandeController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ComptabiliteController;
+use App\Http\Controllers\Api\CooperativeController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DepenseController;
 use App\Http\Controllers\Api\DossierFinancementController;
+use App\Http\Controllers\Api\EligibiliteMinagriController;
 use App\Http\Controllers\Api\IncidentController;
 use App\Http\Controllers\Api\PeseeController;
 use App\Http\Controllers\Api\PlanificateurVentesController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\Api\ReproductionController;
 use App\Http\Controllers\Api\StockController;
 use App\Http\Controllers\Api\SyncController;
 use App\Http\Controllers\Api\TraitementController;
+use App\Http\Controllers\Api\UtilisateurController;
 use App\Http\Controllers\Api\VaccinationController;
 use App\Http\Controllers\Api\VenteController;
 use App\Http\Controllers\Auth\AuthController;
@@ -127,4 +130,24 @@ Route::middleware(['auth:sanctum', 'exploitation.active'])->group(function () {
 
     // Planificateur de ventes intelligent (US5)
     Route::get('/planificateur-ventes/recommandations', [PlanificateurVentesController::class, 'recommandations']);
+
+    // Coopérative Girinka (US6)
+    Route::post('/cooperatives', [CooperativeController::class, 'store']);
+    Route::post('/cooperatives/rejoindre', [CooperativeController::class, 'rejoindre']);
+    Route::post('/cooperatives/consentement', [CooperativeController::class, 'consentement']);
+    Route::get('/cooperatives/{cooperative}/rapport', [CooperativeController::class, 'rapport']);
+    Route::get('/cooperatives/{cooperative}/membres/{membre}/detail', [CooperativeController::class, 'detailMembre']);
+
+    // Éligibilité MINAGRI (US7)
+    Route::get('/minagri/eligibilite', [EligibiliteMinagriController::class, 'evaluer']);
+    Route::get('/minagri/demandes', [EligibiliteMinagriController::class, 'demandes']);
+    Route::patch('/minagri/demandes/{demande}', [EligibiliteMinagriController::class, 'mettreAJourStatut']);
+    Route::get('/minagri/demandes/{demande}/formulaire', [EligibiliteMinagriController::class, 'genererFormulaire']);
+
+    // Administration : gestion des utilisateurs de l'exploitation (T094)
+    Route::middleware('role:gerant')->group(function () {
+        Route::get('/utilisateurs', [UtilisateurController::class, 'index']);
+        Route::post('/utilisateurs/inviter', [UtilisateurController::class, 'inviter']);
+        Route::post('/utilisateurs/{utilisateur}/desactiver', [UtilisateurController::class, 'desactiver']);
+    });
 });

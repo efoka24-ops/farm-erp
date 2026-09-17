@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Animal;
+use App\Services\Minagri\DetectionEligibiliteService;
 use App\Services\Sante\CalendrierVaccinalService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,8 +28,11 @@ class AnimalController extends Controller
         return response()->json($animaux);
     }
 
-    public function store(Request $request, CalendrierVaccinalService $calendrierVaccinal): JsonResponse
-    {
+    public function store(
+        Request $request,
+        CalendrierVaccinalService $calendrierVaccinal,
+        DetectionEligibiliteService $detectionEligibilite,
+    ): JsonResponse {
         $data = $request->validate([
             'espece' => ['required', 'string', 'max:100'],
             'race' => ['nullable', 'string', 'max:100'],
@@ -42,6 +46,7 @@ class AnimalController extends Controller
         $animal = Animal::create([...$data, 'statut' => 'actif']);
 
         $calendrierVaccinal->planifierPour($animal);
+        $detectionEligibilite->relancerPour($animal->exploitation);
 
         return response()->json($animal, 201);
     }

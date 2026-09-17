@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Animal;
 use App\Models\Incident;
+use App\Models\Role;
+use App\Models\User;
+use App\Notifications\AlerteSolidariteNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -48,6 +51,10 @@ class IncidentController extends Controller
             $animal->update(['statut' => 'mort']);
         }
 
+        if ($incident->gravite === 'critique') {
+            $this->alerterSolidariteCooperative($incident, $animal);
+        }
+
         return response()->json($incident, 201);
     }
 
@@ -60,5 +67,21 @@ class IncidentController extends Controller
         $incident->update($data);
 
         return response()->json($incident);
+    }
+
+    /** Alerte solidarité coopérative (T084). */
+    private function alerterSolidariteCooperative(Incident $incident, Animal $animal): void
+    {
+        $exploitation = $animal->exploitation;
+
+        if (! $exploitation->cooperative_id) {
+            return;
+        }
+
+        User::withoutGlobalScopes()
+            ->where('exploitation_id', $exploitation->cooperative_id)
+            ->whereHas('role', fn ($q) => $q->whereIn('slug', [Role::GERANT, Role::GESTIONNAIRE_COOPERATIVE]))
+            ->get()
+            ->each(fn (User $u) => $u->notify(new AlerteSolidariteNotification($incident, $exploitation->nom)));
     }
 }
