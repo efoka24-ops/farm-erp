@@ -190,3 +190,97 @@ td {
   text-align: left;
   font-size: 14px;
 }
+
+/* Landing page */
+.landing {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 48px 16px;
+}
+
+.landing-hero {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.landing-hero h1 {
+  font-size: 40px;
+  margin-bottom: 8px;
+  color: var(--vert);
+}
+
+.landing-hero p {
+  font-size: 18px;
+  color: #444;
+  max-width: 640px;
+  margin: 0 auto 32px;
+}
+
+.landing-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.landing-actions button {
+  padding: 14px 28px;
+  font-size: 16px;
+  border-radius: 8px;
+}
+
+.landing-actions .primaire {
+  background: var(--vert);
+  color: white;
+}
+
+.landing-actions .secondaire {
+  background: white;
+  color: var(--vert);
+  border: 2px solid var(--vert);
+}
+
+.lien {
+  background: none;
+  color: var(--vert);
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.landing-fonctionnalites {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.carte-fonctionnalite {
+  background: white;
+  border: 1px solid var(--gris-bord);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.carte-fonctionnalite h3 {
+  margin-top: 0;
+  color: var(--vert);
+}
+
+.info-demo {
+  background: #f0f9f2;
+  border: 1px solid var(--vert);
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 13px;
+}
+
+.bandeau-demo {
+  background: #fff8e1;
+  border-bottom: 1px solid #f0c14b;
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 13px;
+  margin: -16px -16px 16px;
+}

@@ -43,7 +43,7 @@ class AuthController extends Controller
         if (! $user->two_factor_enabled) {
             return response()->json([
                 'token' => $user->createToken('web')->plainTextToken,
-                'user' => $user,
+                'user' => $user->load('role', 'exploitation'),
             ]);
         }
 
@@ -84,7 +84,7 @@ class AuthController extends Controller
 
         return response()->json([
             'token' => $user->createToken('web')->plainTextToken,
-            'user' => $user,
+            'user' => $user->load('role', 'exploitation'),
         ]);
     }
 

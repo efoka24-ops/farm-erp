@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\SyncController;
 use App\Http\Controllers\Api\TraitementController;
 use App\Http\Controllers\Api\VaccinationController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Webhooks\MokineVetoWebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,10 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+// Porte d'entrée publique : création de compte et démo restreinte (5 jours)
+Route::post('/auth/register', [RegisterController::class, 'inscrire']);
+Route::post('/auth/register-demo', [RegisterController::class, 'creerDemo']);
+
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/login/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('/auth/login/pin', [AuthController::class, 'loginPin']);
@@ -29,7 +34,7 @@ Route::post('/auth/login/pin', [AuthController::class, 'loginPin']);
 // Webhook public (sécurisé par secret partagé, pas de session utilisateur)
 Route::post('/webhooks/mokinevoto/consultations', [MokineVetoWebhookController::class, 'consultation']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'exploitation.active'])->group(function () {
     Route::get('/user', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/pin', [AuthController::class, 'definirPin']);

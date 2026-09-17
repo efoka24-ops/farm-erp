@@ -208,6 +208,32 @@ vérifiables.
 
 ---
 
+## Porte d'entrée publique (ajout hors plan initial, demandé avant Phase 7)
+
+**Goal**: Site public permettant de créer un compte pour sa ferme, ou d'essayer une démo restreinte
+(5 jours) sans intervention d'un administrateur.
+
+- [x] Inscription self-service (`POST /api/auth/register`) : crée une exploitation `mode=production`
+      + un gérant actif, connexion immédiate (token retourné)
+- [x] Démo restreinte (`POST /api/auth/register-demo`) : crée une exploitation `mode=demo` avec
+      `essai_expire_le = +5 jours`, pré-remplie de données d'exemple (`DemoDataSeeder` : 6 animaux
+      avec calendrier vaccinal, 3 exercices de mouvements comptables) pour une démo immédiatement
+      parlante
+- [x] Expiration automatique de la démo : middleware `EnsureExploitationActive` vérifié à chaque
+      requête (pas de cron requis, cohérent avec l'hébergement mutualisé) — bascule `statut_compte`
+      à `expire` et bloque l'accès (403) passé le délai
+- [x] Page d'accueil publique (`web/src/features/landing/LandingPage.jsx`) : présentation, bouton
+      "Créer un compte pour ma ferme", bouton "Essayer la démo (5 jours)", lien connexion existante ;
+      bandeau visible dans l'app indiquant la date d'expiration en mode démo
+- Tests : 5 cas (inscription, email dupliqué, démo immédiatement utilisable et peuplée, blocage après
+      expiration, compte production n'expire jamais) — tous verts
+
+**Limitation connue** : le compte production n'a pour l'instant aucun écran d'invitation d'autres
+utilisateurs de l'exploitation (agent terrain, comptable, etc.) — seul le gérant inscrit existe.
+À ajouter avec l'écran d'administration (T094).
+
+---
+
 ## Phase 7: User Story 8 - Reproduction et naissances (P2)
 
 **Goal**: Calcul auto date de mise bas, alertes, création auto fiches nouveau-nés.

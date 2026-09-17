@@ -5,6 +5,7 @@ namespace App\Http;
 use App\Http\Middleware\AssignRequestId;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\EnsureExploitationActive;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
@@ -86,6 +87,7 @@ class Kernel extends HttpKernel
         'can' => Authorize::class,
         'guest' => RedirectIfAuthenticated::class,
         'role' => EnsureUserHasRole::class,
+        'exploitation.active' => EnsureExploitationActive::class,
         'password.confirm' => RequirePassword::class,
         'precognitive' => HandlePrecognitiveRequests::class,
         'signed' => ValidateSignature::class,
