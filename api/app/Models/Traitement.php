@@ -14,7 +14,7 @@ class Traitement extends Model
     use Auditable, BelongsToExploitation, HasFactory, HasUuids;
 
     protected $fillable = [
-        'exploitation_id', 'animal_id', 'medicament', 'motif',
+        'exploitation_id', 'animal_id', 'medicament', 'categorie_stock_id', 'motif',
         'date_debut', 'delai_attente_jours', 'date_fin_delai_attente', 'administre_par',
     ];
 

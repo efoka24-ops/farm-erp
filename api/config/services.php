@@ -35,6 +35,11 @@ return [
         'tsa_url' => env('RFC3161_TSA_URL'),
     ],
 
+    'tru_trace' => [
+        'api_url' => env('TRU_TRACE_API_URL'),
+        'api_key' => env('TRU_TRACE_API_KEY'),
+    ],
+
     'mokinevoto' => [
         'webhook_secret' => env('MOKINEVOTO_WEBHOOK_SECRET'),
     ],

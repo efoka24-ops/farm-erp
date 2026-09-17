@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\AlimentationController;
 use App\Http\Controllers\Api\AnimalController;
+use App\Http\Controllers\Api\BonCommandeController;
+use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ComptabiliteController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DepenseController;
@@ -9,9 +11,12 @@ use App\Http\Controllers\Api\DossierFinancementController;
 use App\Http\Controllers\Api\IncidentController;
 use App\Http\Controllers\Api\PeseeController;
 use App\Http\Controllers\Api\RecetteController;
+use App\Http\Controllers\Api\ReproductionController;
+use App\Http\Controllers\Api\StockController;
 use App\Http\Controllers\Api\SyncController;
 use App\Http\Controllers\Api\TraitementController;
 use App\Http\Controllers\Api\VaccinationController;
+use App\Http\Controllers\Api\VenteController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Webhooks\MokineVetoWebhookController;
@@ -97,4 +102,25 @@ Route::middleware(['auth:sanctum', 'exploitation.active'])->group(function () {
     Route::post('/financement/dossiers', [DossierFinancementController::class, 'store']);
     Route::get('/financement/dossiers/{dossier}/telecharger', [DossierFinancementController::class, 'telecharger']);
     Route::get('/financement/dossiers/{dossier}/verifier', [DossierFinancementController::class, 'verifierSignature']);
+
+    // Reproduction (US8)
+    Route::get('/saillies', [ReproductionController::class, 'index']);
+    Route::post('/saillies', [ReproductionController::class, 'storeSaillie']);
+    Route::post('/saillies/{saillie}/mise-bas', [ReproductionController::class, 'storeMiseBas']);
+    Route::get('/saillies/alertes', [ReproductionController::class, 'alertes']);
+
+    // Stocks & réapprovisionnement (US9)
+    Route::get('/stock/categories', [StockController::class, 'indexCategories']);
+    Route::post('/stock/categories', [StockController::class, 'storeCategorie']);
+    Route::post('/stock/categories/{categorie}/entrees', [StockController::class, 'entrer']);
+    Route::get('/stock/alertes', [StockController::class, 'alertes']);
+    Route::post('/stock/categories/{categorie}/bons-commande', [BonCommandeController::class, 'store']);
+    Route::get('/stock/bons-commande/{bonCommande}/telecharger', [BonCommandeController::class, 'telecharger']);
+
+    // Ventes & traçabilité TRU TRACE (US10)
+    Route::get('/clients', [ClientController::class, 'index']);
+    Route::post('/clients', [ClientController::class, 'store']);
+    Route::get('/ventes', [VenteController::class, 'index']);
+    Route::post('/ventes', [VenteController::class, 'store']);
+    Route::get('/ventes/{vente}/bon', [VenteController::class, 'telechargerBon']);
 });

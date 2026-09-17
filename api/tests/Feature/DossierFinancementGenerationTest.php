@@ -76,6 +76,8 @@ class DossierFinancementGenerationTest extends TestCase
             ->assertOk()->json();
 
         $this->assertTrue($verification['signature_valide']);
+
+        $this->get("/api/financement/dossiers/{$dossier['id']}/telecharger")->assertOk();
     }
 
     public function test_mensualite_correctement_calculee(): void

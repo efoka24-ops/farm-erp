@@ -10,9 +10,9 @@ use App\Services\Financement\SignatureService;
 use App\Services\Financement\VerificationCompletudeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DossierFinancementController extends Controller
 {
@@ -53,7 +53,7 @@ class DossierFinancementController extends Controller
         return response()->json($dossier, 201);
     }
 
-    public function telecharger(DossierFinancement $dossier): Response
+    public function telecharger(DossierFinancement $dossier): StreamedResponse
     {
         return Storage::download($dossier->pdf_path, 'dossier-financement.pdf');
     }

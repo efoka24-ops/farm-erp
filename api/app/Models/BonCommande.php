@@ -9,24 +9,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class DistributionAlimentation extends Model
+class BonCommande extends Model
 {
     use Auditable, BelongsToExploitation, HasFactory, HasUuids;
 
-    protected $table = 'distributions_alimentation';
+    protected $table = 'bons_commande';
 
     protected $fillable = [
-        'exploitation_id', 'animal_id', 'categorie_stock_id', 'aliment', 'quantite_kg',
-        'date_distribution', 'saisi_par',
+        'exploitation_id', 'categorie_stock_id', 'quantite_commandee', 'pdf_path', 'statut', 'genere_par',
     ];
 
     protected $casts = [
-        'quantite_kg' => 'decimal:2',
-        'date_distribution' => 'date',
+        'quantite_commandee' => 'decimal:2',
     ];
 
-    public function animal(): BelongsTo
+    public function categorie(): BelongsTo
     {
-        return $this->belongsTo(Animal::class);
+        return $this->belongsTo(CategorieStock::class, 'categorie_stock_id');
     }
 }

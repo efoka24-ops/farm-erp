@@ -20,7 +20,7 @@ class Animal extends Model
 
     protected $fillable = [
         'exploitation_id', 'tru_trace_id', 'espece', 'race', 'sexe',
-        'date_naissance', 'statut', 'mere_id', 'pere_id', 'photo_path', 'description',
+        'date_naissance', 'statut', 'mere_id', 'pere_id', 'mise_bas_id', 'photo_path', 'description',
     ];
 
     protected $casts = [

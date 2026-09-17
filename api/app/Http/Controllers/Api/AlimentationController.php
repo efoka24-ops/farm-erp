@@ -4,15 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Animal;
+use App\Models\CategorieStock;
 use App\Models\DistributionAlimentation;
+use App\Services\Stock\StockService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 /**
- * Module alimentation (T023) : enregistrement des distributions. La déduction
- * de stock réelle arrive avec le module stocks (US9, Phase 8) — ici on trace
- * la quantité distribuée pour permettre le calcul de coût alimentaire (US2/US5)
- * dès que le stock existera, sans bloquer le MVP terrain.
+ * Module alimentation (T023) : enregistrement des distributions. Déduction
+ * de stock automatique (T059) si `categorie_stock_id` est renseigné ; sinon
+ * simple enregistrement de la quantité (compatibilité US1, exploitations
+ * n'ayant pas encore configuré leurs catégories de stock).
  */
 class AlimentationController extends Controller
 {
@@ -26,10 +29,11 @@ class AlimentationController extends Controller
         return response()->json($distributions);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, StockService $stock): JsonResponse
     {
         $data = $request->validate([
             'animal_id' => ['nullable', 'uuid', 'exists:animaux,id'],
+            'categorie_stock_id' => ['nullable', 'uuid', 'exists:categories_stock,id'],
             'aliment' => ['required', 'string', 'max:100'],
             'quantite_kg' => ['required', 'numeric', 'min:0.01', 'max:99999'],
             'date_distribution' => ['required', 'date'],
@@ -44,6 +48,16 @@ class AlimentationController extends Controller
             'exploitation_id' => $request->user()->exploitation_id,
             'saisi_par' => $request->user()->id,
         ]);
+
+        if (! empty($data['categorie_stock_id'])) {
+            $categorie = CategorieStock::findOrFail($data['categorie_stock_id']);
+
+            try {
+                $stock->sortir($categorie, (float) $data['quantite_kg'], DistributionAlimentation::class, $distribution->id);
+            } catch (\RuntimeException $e) {
+                throw ValidationException::withMessages(['categorie_stock_id' => [$e->getMessage()]]);
+            }
+        }
 
         return response()->json($distribution, 201);
     }

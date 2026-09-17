@@ -243,14 +243,18 @@ créées avec filiation et ID TRU TRACE.
 
 ### Tests
 
-- [ ] T051 [P] [US8] Tests unitaires calcul gestation par espèce (bovins/caprins/ovins/porcins/camelins)
-- [ ] T052 [P] [US8] Test création automatique fiches nouveau-nés à la mise bas
+- [x] T051 [P] [US8] Tests unitaires calcul gestation par espèce (`GestationServiceTest`, 5 espèces +
+      cas d'erreur espèce inconnue)
+- [x] T052 [P] [US8] Test création automatique fiches nouveau-nés à la mise bas (`ReproductionTest`)
 
 ### Implementation
 
-- [ ] T053 [P] [US8] Module `api/src/modules/reproduction/` (saillies, mises bas, tableau reproduction)
-- [ ] T054 [US8] Alertes J-14/J-7 avant mise bas (push berger responsable)
-- [ ] T055 [US8] Création auto fiches nouveau-nés (filiation + ID TRU TRACE) — dépend de US1 (T020)
+- [x] T053 [P] [US8] Module reproduction (`Saillie`, `MiseBas`, `ReproductionController`) : saillies,
+      mises bas, tableau de reproduction (`GET /saillies`)
+- [x] T054 [US8] Alertes J-14/J-7 avant mise bas (`ReproductionController::alertes`) — **ADAPTÉ** :
+      exposées via l'API, le push mobile réel nécessite FCM/APNs (non mis en place, cf. T049)
+- [x] T055 [US8] Création auto fiches nouveau-nés (filiation mère/père + ID TRU TRACE, traçabilité
+      via `animaux.mise_bas_id`) — dépend de US1 (T020), déjà livré
 
 **Checkpoint**: US8 fonctionnelle, enrichit le cheptel de US1.
 
@@ -264,14 +268,17 @@ créées avec filiation et ID TRU TRACE.
 
 ### Tests
 
-- [ ] T056 [P] [US9] Test alerte seuil de commande
-- [ ] T057 [P] [US9] Test alerte péremption médicament < 30 jours
+- [x] T056 [P] [US9] Test alerte seuil de commande (`StockTest`)
+- [x] T057 [P] [US9] Test alerte péremption médicament < 30 jours (`StockTest`)
 
 ### Implementation
 
-- [ ] T058 [P] [US9] Module `api/src/modules/stocks/` (catégories, lots, valorisation FIFO/PMP)
-- [ ] T059 [US9] Déduction auto stock (liens US1 alimentation, US4 traitements)
-- [ ] T060 [US9] Bon de commande PDF auto-généré fournisseur
+- [x] T058 [P] [US9] Module stocks (`CategorieStock`, `LotStock`, `MouvementStock`, `StockService`) :
+      catégories, lots, valorisation FIFO (sortie = lots les plus anciens d'abord, testé)
+- [x] T059 [US9] Déduction auto stock : `categorie_stock_id` optionnel sur `distributions_alimentation`
+      et `traitements`, appelle `StockService::sortir()` à la création — testé (alimentation)
+- [x] T060 [US9] Bon de commande PDF auto-généré (`BonCommandeController`, dompdf) — déclenché
+      manuellement ou depuis une alerte de seuil (`GET /stock/alertes`)
 
 **Checkpoint**: US9 fonctionnelle, condition la fiabilité du coût alimentaire (US2).
 
@@ -286,13 +293,19 @@ l'acheteur.
 
 ### Tests
 
-- [ ] T061 [P] [US10] Test intégration génération certificat TRU TRACE à la vente
+- [x] T061 [P] [US10] Test génération certificat TRU TRACE à la vente (`VenteTruTraceTest`, 4 cas)
 
 ### Implementation
 
-- [ ] T062 [P] [US10] Module `api/src/modules/ventes/` (vente, carnet clients, paiements différés)
-- [ ] T063 [US10] Bon de vente PDF/WhatsApp + facturation TVA optionnelle
-- [ ] T064 [US10] Intégration API TRU TRACE (certificat de traçabilité + certificat OIE acheteur)
+- [x] T062 [P] [US10] Module ventes (`Vente`, `Client`, `VenteService`) : vente, carnet clients,
+      paiement différé (mode `differe`) — réutilise le blocage délai d'attente de T045
+- [x] T063 [US10] Bon de vente PDF (dompdf) + facturation TVA optionnelle (`montantTtc()`) —
+      **ADAPTÉ** : export WhatsApp non implémenté (nécessite l'API WhatsApp Business, non intégrée) ;
+      le PDF reste téléchargeable et partageable manuellement
+- [x] T064 [US10] Certificat TRU TRACE (`TruTraceService`) — **ADAPTÉ** : aucune API TRU TRACE externe
+      ni credential fournie ; certificat local généré (référence + empreinte SHA-256), explicitement
+      marqué `certifie_officiellement: false` pour ne pas induire l'acheteur en erreur. La vente
+      alimente aussi automatiquement une recette comptable (classe 701), cohérence avec US2
 
 **Checkpoint**: US10 fonctionnelle, alimente US2 (comptabilité) et US3 (dossier financement).
 
