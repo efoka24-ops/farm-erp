@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\DepenseController;
 use App\Http\Controllers\Api\DossierFinancementController;
 use App\Http\Controllers\Api\IncidentController;
 use App\Http\Controllers\Api\PeseeController;
+use App\Http\Controllers\Api\PlanificateurVentesController;
 use App\Http\Controllers\Api\RecetteController;
 use App\Http\Controllers\Api\ReproductionController;
 use App\Http\Controllers\Api\StockController;
@@ -123,4 +124,7 @@ Route::middleware(['auth:sanctum', 'exploitation.active'])->group(function () {
     Route::get('/ventes', [VenteController::class, 'index']);
     Route::post('/ventes', [VenteController::class, 'store']);
     Route::get('/ventes/{vente}/bon', [VenteController::class, 'telechargerBon']);
+
+    // Planificateur de ventes intelligent (US5)
+    Route::get('/planificateur-ventes/recommandations', [PlanificateurVentesController::class, 'recommandations']);
 });

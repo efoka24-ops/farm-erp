@@ -322,22 +322,37 @@ calcule la marge journalière correctement, en < 5s.
 
 ### Tests
 
-- [ ] T065 [P] [US5] Tests unitaires calcul marge journalière (pytest)
-- [ ] T066 [P] [US5] Test exclusion animaux gestants/traitement/reproducteurs désignés
-- [ ] T067 [P] [US5] Test performance recommandation < 5s
+- [x] T065 [P] [US5] Tests unitaires calcul marge journalière — pytest (`ia-planificateur/tests/test_scoring.py`),
+      5 cas (positive, négative, âge nul, tri par score)
+- [x] T066 [P] [US5] Test exclusion animaux gestants/traitement/reproducteurs désignés
+      (`PlanificateurVentesTest`, PHPUnit — la logique d'exclusion vit côté API qui seule connaît
+      saillies/traitements/reproduction)
+- [x] T067 [P] [US5] Test performance recommandation < 5s — pytest, 2000 animaux classés (largement
+      sous le seuil)
 
 ### Implementation
 
-- [ ] T068 [P] [US5] Ingestion hebdomadaire prix marché RAB (vendredi 18h) + fallback dernier prix
-      connu avec date affichée dans `ia-planificateur/src/data/`
-- [ ] T069 [US5] Modèle Random Forest fine-tuné (données RAB 3 ans + ILRI) dans
-      `ia-planificateur/src/model/`
-- [ ] T070 [US5] Endpoint API IA `/recommandations-ventes` (score, prix estimé, CA potentiel)
-- [ ] T071 [US5] Module `api/src/modules/planificateur-ventes/` (client microservice, contraintes
-      métier : gestation, traitement, quota sécurité)
-- [ ] T072 [US5] Écran "Vendre maintenant" (mobile+web) + bouton "Créer la vente maintenant" → US10
-- [ ] T073 [US5] Alerte push hebdomadaire recommandations
-- [ ] T074 [US5] Validation concordance > 70% vs panel 5 éleveurs experts (100 cas historiques)
+- [x] T068 [P] [US5] Ingestion prix marché (`ia-planificateur/src/data/prix_marche.py`) — **ADAPTÉ** :
+      aucune credential API RAB Rwanda fournie ; stockage local + endpoint `POST /prix-marche` pour
+      saisie manuelle en attendant, fallback dernier prix connu (avec date) déjà fonctionnel
+- [x] T069 [US5] Scoring (`ia-planificateur/src/model/scoring.py`) — **ADAPTÉ** : heuristique composite
+      documentée (marge journalière 70% + proximité du poids optimal 30%) au lieu d'un Random Forest,
+      faute de données d'entraînement RAB (3 ans) et ILRI accessibles ; le contrat d'entrée/sortie est
+      conçu pour accueillir un vrai modèle entraîné sans changer l'API
+- [x] T070 [US5] Endpoint `POST /recommandations-ventes` (score, prix estimé, CA potentiel), trié
+      décroissant — testé
+- [x] T071 [US5] `PlanificateurVentesService` (API Laravel) : exclusion gestantes (saillie `en_cours`),
+      sous délai d'attente (`peutEtreVendu()`), reproducteurs désignés (`reproducteur_designe`) —
+      **ADAPTÉ** : pas de notion de "quota sécurité" définie dans le spec, non implémentée faute de
+      règle précisée
+- [x] T072 [US5] Écran "Vendre maintenant" (`web/src/features/planificateur/`) + bouton "Créer la
+      vente maintenant" → crée directement la vente (US10) — **ADAPTÉ** : web uniquement, pas de
+      duplication mobile (cf. adaptation similaire T042)
+- [ ] T073 [US5] Alerte push hebdomadaire — **NON FAIT** : nécessite un service de notification push
+      (FCM/APNs) non intégré à ce stade, cf. limitation déjà notée en T049
+- [ ] T074 [US5] Validation concordance > 70% vs panel 5 éleveurs experts — **hors périmètre agent** :
+      nécessite un panel d'éleveurs experts humains et des données historiques réelles, à mener côté
+      métier une fois le modèle réel (T069) entraîné sur données RAB/ILRI
 
 **Checkpoint**: US5 fonctionnelle indépendamment, s'intègre à US10.
 

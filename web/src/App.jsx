@@ -4,12 +4,14 @@ import LoginForm from './features/auth/LoginForm';
 import ComptabiliteScreen from './features/comptabilite/ComptabiliteScreen';
 import FinancementScreen from './features/financement/FinancementScreen';
 import LandingPage from './features/landing/LandingPage';
+import PlanificateurScreen from './features/planificateur/PlanificateurScreen';
 
 const CLE_STOCKAGE = 'trufarm_token';
 
 const ONGLETS = {
   comptabilite: { label: 'Comptabilité', Composant: ComptabiliteScreen },
   financement: { label: 'Financement', Composant: FinancementScreen },
+  planificateur: { label: 'Vendre maintenant', Composant: PlanificateurScreen },
 };
 
 function App() {
